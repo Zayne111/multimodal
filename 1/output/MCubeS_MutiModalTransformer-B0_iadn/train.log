@@ -1,0 +1,628 @@
+20250220 10:45:35 - root - INFO: - ================== model complexity =====================
+20250220 10:45:35 - root - INFO: - x_stacked shape: torch.Size([1, 4, 3, 512, 512])
+20250220 10:45:37 - root - INFO: - | module                               | #parameters or shape   | #flops     |
+|:-------------------------------------|:-----------------------|:-----------|
+| module                               | 4.255M                 | 32.493G    |
+|  backbone.layers                     |  3.855M                |  13.569G   |
+|   backbone.layers.0                  |   0.171M               |   4.316G   |
+|    backbone.layers.0.0               |    4.8K                |    0.319G  |
+|    backbone.layers.0.1               |    0.159M              |    3.821G  |
+|    backbone.layers.0.2               |    64                  |    10.486M |
+|    backbone.layers.0.3               |    6.509K              |    0.166G  |
+|   backbone.layers.1                  |   0.279M               |   3.118G   |
+|    backbone.layers.1.0               |    18.624K             |    0.307G  |
+|    backbone.layers.1.1               |    0.237M              |    2.664G  |
+|    backbone.layers.1.2               |    0.128K              |    5.243M  |
+|    backbone.layers.1.3               |    24.077K             |    0.141G  |
+|   backbone.layers.2                  |   1.073M               |   3.727G   |
+|    backbone.layers.2.0               |    92.64K              |    0.381G  |
+|    backbone.layers.2.1               |    0.837M              |    3.145G  |
+|    backbone.layers.2.2               |    0.32K               |    3.277M  |
+|    backbone.layers.2.3               |    0.143M              |    0.199G  |
+|   backbone.layers.3                  |   2.332M               |   2.407G   |
+|    backbone.layers.3.0               |    0.369M              |    0.379G  |
+|    backbone.layers.3.1               |    1.6M                |    1.903G  |
+|    backbone.layers.3.2               |    0.512K              |    1.311M  |
+|    backbone.layers.3.3               |    0.362M              |    0.124G  |
+|  decode_head                         |  0.4M                  |  18.841G   |
+|   decode_head.linear_c1.proj         |   8.448K               |   0.537G   |
+|    decode_head.linear_c1.proj.weight |    (256, 32)           |            |
+|    decode_head.linear_c1.proj.bias   |    (256,)              |            |
+|   decode_head.linear_c2.proj         |   16.64K               |   0.268G   |
+|    decode_head.linear_c2.proj.weight |    (256, 64)           |            |
+|    decode_head.linear_c2.proj.bias   |    (256,)              |            |
+|   decode_head.linear_c3.proj         |   41.216K              |   0.168G   |
+|    decode_head.linear_c3.proj.weight |    (256, 160)          |            |
+|    decode_head.linear_c3.proj.bias   |    (256,)              |            |
+|   decode_head.linear_c4.proj         |   65.792K              |   67.109M  |
+|    decode_head.linear_c4.proj.weight |    (256, 256)          |            |
+|    decode_head.linear_c4.proj.bias   |    (256,)              |            |
+|   decode_head.linear_fuse            |   0.263M               |   17.264G  |
+|    decode_head.linear_fuse.conv      |    0.262M              |    17.18G  |
+|    decode_head.linear_fuse.bn        |    0.512K              |    83.886M |
+|   decode_head.linear_pred            |   5.14K                |   0.336G   |
+|    decode_head.linear_pred.weight    |    (20, 256, 1, 1)     |            |
+|    decode_head.linear_pred.bias      |    (20,)               |            |
+20250220 10:45:37 - root - INFO: - ================== model structure =====================
+20250220 10:45:37 - root - INFO: - DistributedDataParallel(
+  (module): MutiModalTransformer(
+    (backbone): MutiModalTransformer(
+      (layers): ModuleList(
+        (0): ModuleList(
+          (0): PatchEmbed(
+            (projection): Conv2d(3, 32, kernel_size=(7, 7), stride=(4, 4), padding=(3, 3))
+            (norm): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+          )
+          (1): ModuleList(
+            (0-1): 2 x EncoderLayer(
+              (norm1): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+              (attn): Attention(
+                (attn): MultiheadAttention(
+                  (out_proj): NonDynamicallyQuantizableLinear(in_features=32, out_features=32, bias=True)
+                )
+                (proj_drop): Dropout(p=0.0, inplace=False)
+                (dropout_layer): DropPath()
+                (sr): Conv2d(32, 32, kernel_size=(8, 8), stride=(8, 8))
+                (norm): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+              )
+              (norm2): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+              (ffn): MixFFN(
+                (activate): GELU(approximate='none')
+                (layers): Sequential(
+                  (0): Conv2d(32, 128, kernel_size=(1, 1), stride=(1, 1))
+                  (1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+                  (2): GELU(approximate='none')
+                  (3): Dropout(p=0.0, inplace=False)
+                  (4): Conv2d(128, 32, kernel_size=(1, 1), stride=(1, 1))
+                  (5): Dropout(p=0.0, inplace=False)
+                )
+                (dropout_layer): DropPath()
+              )
+            )
+          )
+          (2): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+          (3): FeatureFusion(
+            (fpn): ModuleList(
+              (0): Conv2d(32, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (1): Conv2d(16, 8, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+              (2): Conv2d(8, 4, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+            )
+            (boundary_enhancer): Sequential(
+              (0): Conv2d(32, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (1): Sigmoid()
+            )
+            (spatial_attention): Sequential(
+              (0): Conv2d(32, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (1): ReLU()
+              (2): Conv2d(16, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (3): Sigmoid()
+            )
+            (channel_attention): Sequential(
+              (0): AdaptiveAvgPool2d(output_size=1)
+              (1): AdaptiveMaxPool2d(output_size=1)
+              (2): Conv2d(32, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (3): ReLU()
+              (4): Conv2d(16, 32, kernel_size=(1, 1), stride=(1, 1))
+              (5): Sigmoid()
+            )
+            (feature_fusion): Sequential(
+              (0): Conv2d(32, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU()
+            )
+            (modality_selector): ModalitySelector(
+              (scene_classifier): Sequential(
+                (0): Conv2d(32, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                (2): ReLU()
+                (3): Conv2d(16, 8, kernel_size=(1, 1), stride=(1, 1))
+                (4): AdaptiveAvgPool2d(output_size=1)
+                (5): Flatten(start_dim=1, end_dim=-1)
+                (6): Softmax(dim=-1)
+              )
+              (modal_similarity_conv): Sequential(
+                (0): Conv2d(32, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                (1): ReLU()
+                (2): Conv2d(16, 1, kernel_size=(1, 1), stride=(1, 1))
+                (3): AdaptiveAvgPool2d(output_size=1)
+              )
+              (modality_dropout): ModalityDropout()
+            )
+          )
+        )
+        (1): ModuleList(
+          (0): PatchEmbed(
+            (projection): Conv2d(32, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+            (norm): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+          (1): ModuleList(
+            (0-1): 2 x EncoderLayer(
+              (norm1): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+              (attn): Attention(
+                (attn): MultiheadAttention(
+                  (out_proj): NonDynamicallyQuantizableLinear(in_features=64, out_features=64, bias=True)
+                )
+                (proj_drop): Dropout(p=0.0, inplace=False)
+                (dropout_layer): DropPath()
+                (sr): Conv2d(64, 64, kernel_size=(4, 4), stride=(4, 4))
+                (norm): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+              )
+              (norm2): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+              (ffn): MixFFN(
+                (activate): GELU(approximate='none')
+                (layers): Sequential(
+                  (0): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1))
+                  (1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=256)
+                  (2): GELU(approximate='none')
+                  (3): Dropout(p=0.0, inplace=False)
+                  (4): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1))
+                  (5): Dropout(p=0.0, inplace=False)
+                )
+                (dropout_layer): DropPath()
+              )
+            )
+          )
+          (2): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          (3): FeatureFusion(
+            (fpn): ModuleList(
+              (0): Conv2d(64, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (1): Conv2d(32, 16, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+              (2): Conv2d(16, 8, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+            )
+            (boundary_enhancer): Sequential(
+              (0): Conv2d(64, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (1): Sigmoid()
+            )
+            (spatial_attention): Sequential(
+              (0): Conv2d(64, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (1): ReLU()
+              (2): Conv2d(32, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (3): Sigmoid()
+            )
+            (channel_attention): Sequential(
+              (0): AdaptiveAvgPool2d(output_size=1)
+              (1): AdaptiveMaxPool2d(output_size=1)
+              (2): Conv2d(64, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (3): ReLU()
+              (4): Conv2d(32, 64, kernel_size=(1, 1), stride=(1, 1))
+              (5): Sigmoid()
+            )
+            (feature_fusion): Sequential(
+              (0): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU()
+            )
+            (modality_selector): ModalitySelector(
+              (scene_classifier): Sequential(
+                (0): Conv2d(64, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                (2): ReLU()
+                (3): Conv2d(32, 8, kernel_size=(1, 1), stride=(1, 1))
+                (4): AdaptiveAvgPool2d(output_size=1)
+                (5): Flatten(start_dim=1, end_dim=-1)
+                (6): Softmax(dim=-1)
+              )
+              (modal_similarity_conv): Sequential(
+                (0): Conv2d(64, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                (1): ReLU()
+                (2): Conv2d(32, 1, kernel_size=(1, 1), stride=(1, 1))
+                (3): AdaptiveAvgPool2d(output_size=1)
+              )
+              (modality_dropout): ModalityDropout()
+            )
+          )
+        )
+        (2): ModuleList(
+          (0): PatchEmbed(
+            (projection): Conv2d(64, 160, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+            (norm): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+          )
+          (1): ModuleList(
+            (0-1): 2 x EncoderLayer(
+              (norm1): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+              (attn): Attention(
+                (attn): MultiheadAttention(
+                  (out_proj): NonDynamicallyQuantizableLinear(in_features=160, out_features=160, bias=True)
+                )
+                (proj_drop): Dropout(p=0.0, inplace=False)
+                (dropout_layer): DropPath()
+                (sr): Conv2d(160, 160, kernel_size=(2, 2), stride=(2, 2))
+                (norm): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+              )
+              (norm2): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+              (ffn): MixFFN(
+                (activate): GELU(approximate='none')
+                (layers): Sequential(
+                  (0): Conv2d(160, 640, kernel_size=(1, 1), stride=(1, 1))
+                  (1): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=640)
+                  (2): GELU(approximate='none')
+                  (3): Dropout(p=0.0, inplace=False)
+                  (4): Conv2d(640, 160, kernel_size=(1, 1), stride=(1, 1))
+                  (5): Dropout(p=0.0, inplace=False)
+                )
+                (dropout_layer): DropPath()
+              )
+            )
+          )
+          (2): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+          (3): FeatureFusion(
+            (fpn): ModuleList(
+              (0): Conv2d(160, 80, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (1): Conv2d(80, 40, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+              (2): Conv2d(40, 20, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+            )
+            (boundary_enhancer): Sequential(
+              (0): Conv2d(160, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (1): Sigmoid()
+            )
+            (spatial_attention): Sequential(
+              (0): Conv2d(160, 80, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (1): ReLU()
+              (2): Conv2d(80, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (3): Sigmoid()
+            )
+            (channel_attention): Sequential(
+              (0): AdaptiveAvgPool2d(output_size=1)
+              (1): AdaptiveMaxPool2d(output_size=1)
+              (2): Conv2d(160, 80, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (3): ReLU()
+              (4): Conv2d(80, 160, kernel_size=(1, 1), stride=(1, 1))
+              (5): Sigmoid()
+            )
+            (feature_fusion): Sequential(
+              (0): Conv2d(160, 160, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (1): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU()
+            )
+            (modality_selector): ModalitySelector(
+              (scene_classifier): Sequential(
+                (0): Conv2d(160, 80, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                (1): BatchNorm2d(80, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                (2): ReLU()
+                (3): Conv2d(80, 8, kernel_size=(1, 1), stride=(1, 1))
+                (4): AdaptiveAvgPool2d(output_size=1)
+                (5): Flatten(start_dim=1, end_dim=-1)
+                (6): Softmax(dim=-1)
+              )
+              (modal_similarity_conv): Sequential(
+                (0): Conv2d(160, 80, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                (1): ReLU()
+                (2): Conv2d(80, 1, kernel_size=(1, 1), stride=(1, 1))
+                (3): AdaptiveAvgPool2d(output_size=1)
+              )
+              (modality_dropout): ModalityDropout()
+            )
+          )
+        )
+        (3): ModuleList(
+          (0): PatchEmbed(
+            (projection): Conv2d(160, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+            (norm): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+          )
+          (1): ModuleList(
+            (0-1): 2 x EncoderLayer(
+              (norm1): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+              (attn): Attention(
+                (attn): MultiheadAttention(
+                  (out_proj): NonDynamicallyQuantizableLinear(in_features=256, out_features=256, bias=True)
+                )
+                (proj_drop): Dropout(p=0.0, inplace=False)
+                (dropout_layer): DropPath()
+              )
+              (norm2): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+              (ffn): MixFFN(
+                (activate): GELU(approximate='none')
+                (layers): Sequential(
+                  (0): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1))
+                  (1): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1024)
+                  (2): GELU(approximate='none')
+                  (3): Dropout(p=0.0, inplace=False)
+                  (4): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1))
+                  (5): Dropout(p=0.0, inplace=False)
+                )
+                (dropout_layer): DropPath()
+              )
+            )
+          )
+          (2): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+          (3): FeatureFusion(
+            (fpn): ModuleList(
+              (0): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (1): Conv2d(128, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+              (2): Conv2d(64, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+            )
+            (boundary_enhancer): Sequential(
+              (0): Conv2d(256, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (1): Sigmoid()
+            )
+            (spatial_attention): Sequential(
+              (0): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (1): ReLU()
+              (2): Conv2d(128, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (3): Sigmoid()
+            )
+            (channel_attention): Sequential(
+              (0): AdaptiveAvgPool2d(output_size=1)
+              (1): AdaptiveMaxPool2d(output_size=1)
+              (2): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (3): ReLU()
+              (4): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1))
+              (5): Sigmoid()
+            )
+            (feature_fusion): Sequential(
+              (0): Conv2d(256, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+              (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU()
+            )
+            (modality_selector): ModalitySelector(
+              (scene_classifier): Sequential(
+                (0): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                (2): ReLU()
+                (3): Conv2d(128, 8, kernel_size=(1, 1), stride=(1, 1))
+                (4): AdaptiveAvgPool2d(output_size=1)
+                (5): Flatten(start_dim=1, end_dim=-1)
+                (6): Softmax(dim=-1)
+              )
+              (modal_similarity_conv): Sequential(
+                (0): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                (1): ReLU()
+                (2): Conv2d(128, 1, kernel_size=(1, 1), stride=(1, 1))
+                (3): AdaptiveAvgPool2d(output_size=1)
+              )
+              (modality_dropout): ModalityDropout()
+            )
+          )
+        )
+      )
+    )
+    (decode_head): SegFormerHead(
+      (linear_c1): MLP(
+        (proj): Linear(in_features=32, out_features=256, bias=True)
+      )
+      (linear_c2): MLP(
+        (proj): Linear(in_features=64, out_features=256, bias=True)
+      )
+      (linear_c3): MLP(
+        (proj): Linear(in_features=160, out_features=256, bias=True)
+      )
+      (linear_c4): MLP(
+        (proj): Linear(in_features=256, out_features=256, bias=True)
+      )
+      (linear_fuse): ConvModule(
+        (conv): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+      (linear_pred): Conv2d(256, 20, kernel_size=(1, 1), stride=(1, 1))
+      (dropout): Dropout2d(p=0.1, inplace=False)
+    )
+  )
+)
+20250220 10:45:37 - root - INFO: - ================== training config =====================
+20250220 10:45:37 - root - INFO: - {'DEVICE': 'cuda', 'SAVE_DIR': '1/output', 'MODEL': {'NAME': 'MutiModalTransformer', 'BACKBONE': 'MutiModalTransformer-B0', 'PRETRAINED': '1/pretrained/mit_b0_20220624-7e0fe6dd.pth', 'RESUME': '', 'MODEL_STRUCTURE': {'EMBED_DIMS': 32, 'NUM_HEADS': [1, 2, 5, 8], 'NUM_LAYERS': [2, 2, 2, 2], 'PATCH_SIZES': [7, 3, 3, 3], 'STRIDES': [4, 2, 2, 2], 'SR_RATIOS': [8, 4, 2, 1], 'OUT_INDICES': [0, 1, 2, 3], 'FUSION_REDUCTION': 2, 'NUM_STAGES': 4, 'IN_CHANNELS': 3}}, 'DATASET': {'NAME': 'MCubeS', 'ROOT': 'autodl-tmp/Mcubes/multimodal_dataset', 'IGNORE_LABEL': 255, 'MODALS': ['image', 'aolp', 'dolp', 'nir'], 'IN_CHANNELS': 3}, 'TRAIN': {'IMAGE_SIZE': [512, 512], 'BATCH_SIZE': 1, 'EPOCHS': 500, 'EVAL_START': 400, 'EVAL_INTERVAL': 1, 'AMP': False, 'DDP': True}, 'LOSS': {'NAME': 'CrossEntropy', 'CLS_WEIGHTS': False}, 'OPTIMIZER': {'NAME': 'adamw', 'LR': 6e-05, 'WEIGHT_DECAY': 0.01}, 'SCHEDULER': {'NAME': 'warmuppolylr', 'POWER': 0.9, 'WARMUP': 10, 'WARMUP_RATIO': 0.1}, 'EVAL': {'MODEL_PATH': 'output/MCubeS/mutimodal_b5_mcubes.pth', 'IMAGE_SIZE': [640, 640], 'BATCH_SIZE': 1, 'MSF': {'ENABLE': False, 'FLIP': True, 'SCALES': [0.5, 1.0, 1.5]}}}
+20250220 13:19:42 - root - INFO: - 
+Class   	IoU     	Acc     
+1 asphalt	63.76	79.34
+2 concrete	34.81	53.16
+3 metal 	24.64	47.31
+4 road_marking	31.98	35.43
+5 fabric	3.59	4.76
+6 glass 	25.79	33.77
+7 plaster	0.69	0.99
+8 plastic	2.33	4.77
+9 rubber	2.38	2.67
+10 sand 	3.40	4.74
+11 gravel	0.49	0.50
+12 ceramic	9.06	14.25
+13 cobblestone	32.48	54.09
+14 brick	24.32	42.80
+15 grass	41.43	68.23
+16 wood 	14.51	21.56
+17 leaf 	60.15	78.84
+18 water	1.40	1.41
+19 human	0.00	0.00
+20 sky  	93.15	96.69
+== Epoch:  	400	mean_IoU	23.52	mean_Acc	32.27
+20250220 13:19:42 - root - INFO: - Current epoch:400 mIoU: 23.52 Best mIoU: 23.52
+20250220 13:20:14 - root - INFO: - Current epoch:401 mIoU: 22.68 Best mIoU: 23.52
+20250220 13:20:46 - root - INFO: - 
+Class   	IoU     	Acc     
+1 asphalt	63.51	79.30
+2 concrete	36.15	56.07
+3 metal 	24.56	45.12
+4 road_marking	31.53	34.77
+5 fabric	3.25	4.39
+6 glass 	27.68	40.28
+7 plaster	0.96	1.22
+8 plastic	3.02	7.13
+9 rubber	6.56	8.69
+10 sand 	6.18	8.37
+11 gravel	1.97	2.01
+12 ceramic	8.60	10.61
+13 cobblestone	33.19	56.26
+14 brick	25.33	46.25
+15 grass	42.14	66.56
+16 wood 	12.38	16.45
+17 leaf 	61.72	81.13
+18 water	0.70	0.70
+19 human	0.00	0.00
+20 sky  	91.42	94.04
+== Epoch:  	402	mean_IoU	24.04	mean_Acc	32.97
+20250220 13:20:46 - root - INFO: - Current epoch:402 mIoU: 24.04 Best mIoU: 24.04
+20250220 13:21:18 - root - INFO: - Current epoch:403 mIoU: 22.93 Best mIoU: 24.04
+20250220 13:21:50 - root - INFO: - Current epoch:404 mIoU: 23.45 Best mIoU: 24.04
+20250220 13:22:22 - root - INFO: - Current epoch:405 mIoU: 22.72 Best mIoU: 24.04
+20250220 13:22:54 - root - INFO: - 
+Class   	IoU     	Acc     
+1 asphalt	62.54	76.99
+2 concrete	35.84	50.81
+3 metal 	23.19	51.47
+4 road_marking	35.33	41.37
+5 fabric	3.23	4.57
+6 glass 	24.94	35.33
+7 plaster	0.85	1.46
+8 plastic	2.83	8.15
+9 rubber	6.08	8.67
+10 sand 	5.69	7.85
+11 gravel	1.68	1.70
+12 ceramic	8.92	10.60
+13 cobblestone	36.16	58.38
+14 brick	25.17	42.17
+15 grass	42.78	66.24
+16 wood 	12.97	17.50
+17 leaf 	61.67	83.24
+18 water	0.68	0.69
+19 human	0.00	0.00
+20 sky  	92.01	94.57
+== Epoch:  	406	mean_IoU	24.13	mean_Acc	33.09
+20250220 13:22:54 - root - INFO: - Current epoch:406 mIoU: 24.13 Best mIoU: 24.13
+20250220 13:23:27 - root - INFO: - Current epoch:407 mIoU: 22.82 Best mIoU: 24.13
+20250220 13:23:59 - root - INFO: - Current epoch:408 mIoU: 23.54 Best mIoU: 24.13
+20250220 13:24:31 - root - INFO: - Current epoch:409 mIoU: 23.35 Best mIoU: 24.13
+20250220 13:25:02 - root - INFO: - Current epoch:410 mIoU: 22.4 Best mIoU: 24.13
+20250220 13:25:34 - root - INFO: - Current epoch:411 mIoU: 22.49 Best mIoU: 24.13
+20250220 13:26:05 - root - INFO: - Current epoch:412 mIoU: 23.51 Best mIoU: 24.13
+20250220 13:26:37 - root - INFO: - Current epoch:413 mIoU: 22.55 Best mIoU: 24.13
+20250220 13:27:09 - root - INFO: - Current epoch:414 mIoU: 22.71 Best mIoU: 24.13
+20250220 13:27:41 - root - INFO: - Current epoch:415 mIoU: 22.3 Best mIoU: 24.13
+20250220 13:28:14 - root - INFO: - Current epoch:416 mIoU: 22.02 Best mIoU: 24.13
+20250220 13:28:45 - root - INFO: - Current epoch:417 mIoU: 22.98 Best mIoU: 24.13
+20250220 13:29:18 - root - INFO: - Current epoch:418 mIoU: 23.49 Best mIoU: 24.13
+20250220 13:29:49 - root - INFO: - Current epoch:419 mIoU: 22.41 Best mIoU: 24.13
+20250220 13:30:21 - root - INFO: - Current epoch:420 mIoU: 23.08 Best mIoU: 24.13
+20250220 13:30:54 - root - INFO: - Current epoch:421 mIoU: 23.12 Best mIoU: 24.13
+20250220 13:31:26 - root - INFO: - 
+Class   	IoU     	Acc     
+1 asphalt	63.43	78.14
+2 concrete	32.70	42.14
+3 metal 	23.76	51.14
+4 road_marking	35.76	40.57
+5 fabric	5.10	8.83
+6 glass 	23.43	32.89
+7 plaster	0.51	1.48
+8 plastic	2.73	7.62
+9 rubber	7.09	12.81
+10 sand 	17.23	26.24
+11 gravel	0.35	0.35
+12 ceramic	7.97	10.42
+13 cobblestone	36.08	53.25
+14 brick	23.52	44.01
+15 grass	41.00	67.60
+16 wood 	13.90	21.54
+17 leaf 	59.32	81.06
+18 water	0.50	0.50
+19 human	0.27	0.27
+20 sky  	89.90	92.54
+== Epoch:  	422	mean_IoU	24.23	mean_Acc	33.67
+20250220 13:31:26 - root - INFO: - Current epoch:422 mIoU: 24.23 Best mIoU: 24.23
+20250220 13:31:57 - root - INFO: - Current epoch:423 mIoU: 22.68 Best mIoU: 24.23
+20250220 13:32:30 - root - INFO: - 
+Class   	IoU     	Acc     
+1 asphalt	64.01	84.04
+2 concrete	35.48	47.51
+3 metal 	23.86	45.54
+4 road_marking	33.88	37.82
+5 fabric	4.61	7.49
+6 glass 	25.39	35.93
+7 plaster	0.99	1.43
+8 plastic	3.29	7.54
+9 rubber	6.05	10.81
+10 sand 	10.81	13.39
+11 gravel	0.75	0.76
+12 ceramic	7.05	8.72
+13 cobblestone	39.80	71.38
+14 brick	26.99	43.16
+15 grass	40.79	64.40
+16 wood 	13.92	20.09
+17 leaf 	59.38	81.61
+18 water	0.54	0.54
+19 human	0.19	0.21
+20 sky  	89.72	92.06
+== Epoch:  	424	mean_IoU	24.38	mean_Acc	33.72
+20250220 13:32:30 - root - INFO: - Current epoch:424 mIoU: 24.38 Best mIoU: 24.38
+20250220 13:33:02 - root - INFO: - 
+Class   	IoU     	Acc     
+1 asphalt	62.99	79.72
+2 concrete	35.02	48.77
+3 metal 	20.86	38.74
+4 road_marking	36.15	41.78
+5 fabric	3.75	5.89
+6 glass 	25.03	33.62
+7 plaster	0.92	1.44
+8 plastic	3.40	8.97
+9 rubber	6.27	9.21
+10 sand 	17.12	23.05
+11 gravel	0.90	0.92
+12 ceramic	7.87	10.03
+13 cobblestone	42.07	72.78
+14 brick	26.56	44.39
+15 grass	41.16	66.02
+16 wood 	13.53	22.25
+17 leaf 	59.54	80.21
+18 water	0.87	0.87
+19 human	0.00	0.00
+20 sky  	90.40	93.14
+== Epoch:  	425	mean_IoU	24.72	mean_Acc	34.09
+20250220 13:33:02 - root - INFO: - Current epoch:425 mIoU: 24.72 Best mIoU: 24.72
+20250220 13:33:33 - root - INFO: - Current epoch:426 mIoU: 22.36 Best mIoU: 24.72
+20250220 13:34:05 - root - INFO: - Current epoch:427 mIoU: 22.78 Best mIoU: 24.72
+20250220 13:34:36 - root - INFO: - Current epoch:428 mIoU: 23.6 Best mIoU: 24.72
+20250220 13:35:08 - root - INFO: - Current epoch:429 mIoU: 22.36 Best mIoU: 24.72
+20250220 13:35:39 - root - INFO: - Current epoch:430 mIoU: 24.17 Best mIoU: 24.72
+20250220 13:36:11 - root - INFO: - Current epoch:431 mIoU: 23.02 Best mIoU: 24.72
+20250220 13:36:43 - root - INFO: - Current epoch:432 mIoU: 22.6 Best mIoU: 24.72
+20250220 13:37:15 - root - INFO: - Current epoch:433 mIoU: 22.7 Best mIoU: 24.72
+20250220 13:37:46 - root - INFO: - Current epoch:434 mIoU: 23.31 Best mIoU: 24.72
+20250220 13:38:18 - root - INFO: - Current epoch:435 mIoU: 23.85 Best mIoU: 24.72
+20250220 13:38:51 - root - INFO: - Current epoch:436 mIoU: 22.71 Best mIoU: 24.72
+20250220 13:39:24 - root - INFO: - Current epoch:437 mIoU: 22.97 Best mIoU: 24.72
+20250220 13:39:56 - root - INFO: - Current epoch:438 mIoU: 23.02 Best mIoU: 24.72
+20250220 13:40:28 - root - INFO: - Current epoch:439 mIoU: 23.82 Best mIoU: 24.72
+20250220 13:41:00 - root - INFO: - Current epoch:440 mIoU: 22.1 Best mIoU: 24.72
+20250220 13:41:32 - root - INFO: - Current epoch:441 mIoU: 22.33 Best mIoU: 24.72
+20250220 13:42:04 - root - INFO: - Current epoch:442 mIoU: 23.33 Best mIoU: 24.72
+20250220 13:42:36 - root - INFO: - Current epoch:443 mIoU: 22.95 Best mIoU: 24.72
+20250220 13:43:08 - root - INFO: - Current epoch:444 mIoU: 22.94 Best mIoU: 24.72
+20250220 13:43:40 - root - INFO: - Current epoch:445 mIoU: 22.48 Best mIoU: 24.72
+20250220 13:44:11 - root - INFO: - Current epoch:446 mIoU: 21.94 Best mIoU: 24.72
+20250220 13:44:43 - root - INFO: - Current epoch:447 mIoU: 22.8 Best mIoU: 24.72
+20250220 13:45:16 - root - INFO: - Current epoch:448 mIoU: 23.1 Best mIoU: 24.72
+20250220 13:45:48 - root - INFO: - Current epoch:449 mIoU: 22.93 Best mIoU: 24.72
+20250220 13:46:19 - root - INFO: - Current epoch:450 mIoU: 22.19 Best mIoU: 24.72
+20250220 13:46:51 - root - INFO: - Current epoch:451 mIoU: 22.72 Best mIoU: 24.72
+20250220 13:47:23 - root - INFO: - Current epoch:452 mIoU: 22.6 Best mIoU: 24.72
+20250220 13:47:55 - root - INFO: - Current epoch:453 mIoU: 23.05 Best mIoU: 24.72
+20250220 13:48:27 - root - INFO: - Current epoch:454 mIoU: 22.73 Best mIoU: 24.72
+20250220 13:48:59 - root - INFO: - Current epoch:455 mIoU: 23.97 Best mIoU: 24.72
+20250220 13:49:31 - root - INFO: - Current epoch:456 mIoU: 22.86 Best mIoU: 24.72
+20250220 13:50:03 - root - INFO: - Current epoch:457 mIoU: 23.11 Best mIoU: 24.72
+20250220 13:50:35 - root - INFO: - Current epoch:458 mIoU: 23.47 Best mIoU: 24.72
+20250220 13:51:07 - root - INFO: - Current epoch:459 mIoU: 23.27 Best mIoU: 24.72
+20250220 13:51:39 - root - INFO: - Current epoch:460 mIoU: 22.51 Best mIoU: 24.72
+20250220 13:52:11 - root - INFO: - Current epoch:461 mIoU: 24.1 Best mIoU: 24.72
+20250220 13:52:43 - root - INFO: - Current epoch:462 mIoU: 23.03 Best mIoU: 24.72
+20250220 13:53:15 - root - INFO: - Current epoch:463 mIoU: 22.67 Best mIoU: 24.72
+20250220 13:53:47 - root - INFO: - Current epoch:464 mIoU: 22.6 Best mIoU: 24.72
+20250220 13:54:19 - root - INFO: - Current epoch:465 mIoU: 23.58 Best mIoU: 24.72
+20250220 13:54:51 - root - INFO: - Current epoch:466 mIoU: 22.34 Best mIoU: 24.72
+20250220 13:55:23 - root - INFO: - Current epoch:467 mIoU: 22.18 Best mIoU: 24.72
+20250220 13:55:56 - root - INFO: - Current epoch:468 mIoU: 23.05 Best mIoU: 24.72
+20250220 13:56:28 - root - INFO: - Current epoch:469 mIoU: 22.47 Best mIoU: 24.72
+20250220 13:57:01 - root - INFO: - Current epoch:470 mIoU: 24.25 Best mIoU: 24.72
+20250220 13:57:33 - root - INFO: - Current epoch:471 mIoU: 24.04 Best mIoU: 24.72
+20250220 13:58:05 - root - INFO: - Current epoch:472 mIoU: 23.01 Best mIoU: 24.72
+20250220 13:58:36 - root - INFO: - Current epoch:473 mIoU: 22.56 Best mIoU: 24.72
+20250220 13:59:07 - root - INFO: - Current epoch:474 mIoU: 23.19 Best mIoU: 24.72
+20250220 13:59:39 - root - INFO: - Current epoch:475 mIoU: 24.67 Best mIoU: 24.72
+20250220 14:00:12 - root - INFO: - Current epoch:476 mIoU: 22.91 Best mIoU: 24.72
+20250220 14:00:44 - root - INFO: - Current epoch:477 mIoU: 22.55 Best mIoU: 24.72
+20250220 14:01:15 - root - INFO: - Current epoch:478 mIoU: 22.78 Best mIoU: 24.72
+20250220 14:01:48 - root - INFO: - Current epoch:479 mIoU: 23.31 Best mIoU: 24.72
+20250220 14:02:20 - root - INFO: - Current epoch:480 mIoU: 22.89 Best mIoU: 24.72
+20250220 14:02:51 - root - INFO: - Current epoch:481 mIoU: 23.44 Best mIoU: 24.72
+20250220 14:03:23 - root - INFO: - Current epoch:482 mIoU: 22.62 Best mIoU: 24.72
+20250220 14:03:56 - root - INFO: - Current epoch:483 mIoU: 23.86 Best mIoU: 24.72
+20250220 14:04:27 - root - INFO: - Current epoch:484 mIoU: 22.87 Best mIoU: 24.72
+20250220 14:04:59 - root - INFO: - Current epoch:485 mIoU: 23.16 Best mIoU: 24.72
+20250220 14:05:31 - root - INFO: - Current epoch:486 mIoU: 23.31 Best mIoU: 24.72

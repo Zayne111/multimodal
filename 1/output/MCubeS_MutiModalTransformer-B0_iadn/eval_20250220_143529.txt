@@ -1,0 +1,26 @@
+1/output/MCubeS_MutiModalTransformer-B0_iadn/MutiModalTransformer_MutiModalTransformer-B0_MCubeS_epoch426_24.72.pth
+============== Eval on None 102 images =================
+
+Class           IoU     F1    Acc
+------------  -----  -----  -----
+asphalt       62.99  77.29  79.72
+concrete      35.02  51.87  48.78
+metal         20.86  34.52  38.74
+road_marking  36.15  53.1   41.78
+fabric         3.75   7.22   5.89
+glass         25.03  40.04  33.62
+plaster        0.92   1.83   1.44
+plastic        3.4    6.57   8.97
+rubber         6.27  11.79   9.21
+sand          17.12  29.23  23.05
+gravel         0.9    1.79   0.92
+ceramic        7.88  14.6   10.03
+cobblestone   42.07  59.23  72.78
+brick         26.57  41.98  44.39
+grass         41.16  58.31  66.02
+wood          13.53  23.83  22.25
+leaf          59.54  74.64  80.21
+water          0.87   1.72   0.87
+human          0      0      0
+sky           90.4   94.96  93.14
+Mean          24.72  34.23  34.09

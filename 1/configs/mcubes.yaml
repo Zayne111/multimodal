@@ -1,0 +1,70 @@
+# 设备设置
+DEVICE          : cuda                # 设备类型 (cpu, cuda, cuda0, cuda1, ...)
+SAVE_DIR        : '1/output'            # 输出目录，用于保存模型、日志和推理结果
+
+# 模型设置
+MODEL:
+  NAME          : MutiModalTransformer
+  BACKBONE      : MutiModalTransformer-B0
+  PRETRAINED    : '1/pretrained/mit_b0_20220624-7e0fe6dd.pth' # 'https://download.openmmlab.com/mmsegmentation/v0.5/pretrain/segformer/mit_b0_20220624-7e0fe6dd.pth'
+  RESUME        : ''  # 如果有中断的训练，可以指定模型检查点路径
+  MODEL_STRUCTURE:
+    EMBED_DIMS    : 32  
+    NUM_HEADS     : [1, 2, 5, 8]  
+    NUM_LAYERS    : [2, 2, 2, 2]  
+    PATCH_SIZES   : [7, 3, 3, 3]  
+    STRIDES       : [4, 2, 2, 2]  
+    SR_RATIOS     : [8, 4, 2, 1]  
+    OUT_INDICES   : [0, 1, 2, 3]  
+    FUSION_REDUCTION: 2
+    NUM_STAGES    : 4
+    IN_CHANNELS   : 3
+
+# 数据集设置
+DATASET:
+  NAME          : MCubeS                                         # 数据集名称
+  ROOT          : 'autodl-tmp/Mcubes/multimodal_dataset'         # 数据集根目录
+  IGNORE_LABEL  : 255                                            # 忽略标签值
+  MODALS        : ['image', 'aolp', 'dolp', 'nir']               # 输入的多模态类型
+  IN_CHANNELS   : 3
+
+# 训练设置
+TRAIN:
+  IMAGE_SIZE    : [512, 512]        # 训练图像尺寸 (height, width)
+  BATCH_SIZE    : 1                 # 批量大小
+  EPOCHS        : 500               # 总训练 epoch 数
+  EVAL_START    : 400               # 从第多少 epoch 开始评估
+  EVAL_INTERVAL : 1                 # 每隔多少 epoch 进行评估
+  AMP           : false              # 是否启用自动混合精度训练
+  DDP           : true              # 是否使用分布式数据并行
+
+# 损失函数设置
+LOSS:
+  NAME          : OhemCrossEntropy        # 损失函数名称
+  CLS_WEIGHTS   : false               # 是否使用类别权重
+
+# 优化器设置
+OPTIMIZER:
+  NAME          : adamw              # 优化器名称
+  LR            : 0.00006            # 初始学习率
+  WEIGHT_DECAY  : 0.01               # 权重衰减系数
+
+# 学习率调度器设置
+SCHEDULER:
+  NAME          : warmuppolylr       # 学习率调度器名称
+  POWER         : 0.9                # 学习率多项式调度的幂次
+  WARMUP        : 10                 # 学习率预热的 epoch 数
+  WARMUP_RATIO  : 0.1                # 学习率预热的比例
+
+# 评估设置
+EVAL:
+  MODEL_PATH    : '1/output/MCubeS_MutiModalTransformer-B0_iadn/MutiModalTransformer_MutiModalTransformer-B0_MCubeS_epoch426_24.72.pth'        # 评估时加载的模型路径
+  IMAGE_SIZE    : [1024, 1024]        # 评估图像尺寸 (height, width)
+  BATCH_SIZE    : 1                 # 评估时的批量大小
+  MSF: 
+    ENABLE      : false                                      # 是否启用多尺度评估
+    FLIP        : true                                       # 是否使用翻转增强
+    SCALES      : [0.5, 0.75, 1.0, 1.25, 1.5, 1.75]          # 多尺度的缩放比例
+
+
+ 
